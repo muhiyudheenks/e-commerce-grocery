@@ -1,69 +1,134 @@
-import Image from "next/image";
+import Link from 'next/link';
+import { Leaf, ShieldCheck, Tag, Truck } from 'lucide-react';
+import { ProductGrid } from '@/components/product/product-grid';
+import { SectionHeading } from '@/components/section-heading';
+import { ReviewCard } from '@/components/review-card';
+import { FaqAccordion } from '@/components/faq-accordion';
+import {
+  departments,
+  faqs,
+  getBestSellers,
+  getProductsByDepartment,
+  reviews,
+  store,
+} from '@/data/mock-data';
 
-export default function Home() {
+const WHY_CHOOSE = [
+  {
+    icon: Leaf,
+    title: 'Farm Fresh',
+    line: 'Picked in Kerala and packed the same morning.',
+  },
+  {
+    icon: Tag,
+    title: 'Best Prices',
+    line: 'Sourced direct, so you skip the middleman markup.',
+  },
+  {
+    icon: ShieldCheck,
+    title: 'Quality Checked',
+    line: 'Every crate is hand-graded before it ships.',
+  },
+  {
+    icon: Truck,
+    title: 'Fast Delivery',
+    line: 'Same-day across Kochi, next morning elsewhere.',
+  },
+];
+
+const FEATURED_DEPARTMENTS = ['vegetables', 'fruits', 'spices'] as const;
+
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
+    <>
+      {/* 1 — Hero */}
+      <section className="bg-accent-soft">
+        <div className="mx-auto max-w-6xl px-4 py-16 text-center sm:py-24">
+          <h1 className="text-4xl font-semibold text-primary sm:text-5xl">
+            {store.tagline}
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="mx-auto mt-4 max-w-xl text-lg text-muted">
+            Farm-fresh produce and Kerala staples, delivered to your door.
           </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            href="/products"
+            className="mt-8 inline-block rounded-lg bg-primary px-8 py-3 text-base font-semibold text-white transition-colors hover:bg-primary-hover focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            Shop Now
+          </Link>
         </div>
-      </main>
-    </div>
+      </section>
+
+      <div className="mx-auto max-w-6xl space-y-16 px-4 py-16">
+        {/* 2 — Shop by Category */}
+        <section>
+          <SectionHeading title="Shop by Category" />
+          <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
+            {departments.map((d) => (
+              <Link
+                key={d.slug}
+                href={`/departments/${d.slug}`}
+                className="flex flex-col items-center gap-3 rounded-xl border border-border bg-surface p-8 transition-shadow hover:shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                <span aria-hidden="true" className="text-5xl">
+                  {d.icon}
+                </span>
+                <span className="font-semibold text-text">{d.name}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+
+        {/* 3 — Best Sellers */}
+        <section>
+          <SectionHeading title="Best Sellers" href="/products" />
+          <ProductGrid products={getBestSellers(8)} />
+        </section>
+
+        {/* 4 — One grid per featured department */}
+        {FEATURED_DEPARTMENTS.map((slug) => {
+          const department = departments.find((d) => d.slug === slug)!;
+          return (
+            <section key={slug}>
+              <SectionHeading
+                title={department.name}
+                href={`/departments/${slug}`}
+              />
+              <ProductGrid products={getProductsByDepartment(slug).slice(0, 6)} />
+            </section>
+          );
+        })}
+
+        {/* 5 — Why Choose Groziq */}
+        <section>
+          <SectionHeading title={`Why Choose ${store.name}`} />
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            {WHY_CHOOSE.map(({ icon: Icon, title, line }) => (
+              <div key={title} className="flex flex-col gap-2">
+                <Icon aria-hidden="true" className="h-8 w-8 text-primary" />
+                <h3 className="font-semibold text-text">{title}</h3>
+                <p className="text-sm text-muted">{line}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {/* 6 — Customer Reviews */}
+        <section>
+          <SectionHeading title="Customer Reviews" />
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            {reviews.map((review) => (
+              <ReviewCard key={review.id} review={review} />
+            ))}
+          </div>
+        </section>
+
+        {/* 7 — FAQ */}
+        <section>
+          <SectionHeading title="Frequently Asked Questions" />
+          <FaqAccordion items={faqs} />
+        </section>
+      </div>
+    </>
   );
 }
